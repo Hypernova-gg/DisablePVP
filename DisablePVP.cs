@@ -99,14 +99,20 @@ namespace Oxide.Plugins
 
         private object OnEntityTakeDamage(BaseCombatEntity entity, HitInfo info)
         {
-            if (entity.ToPlayer() == null || info.Initiator.ToPlayer() == null) return true; // If either the player or the victim is not a player, this ain't pvp
+            if(entity == null || info == null || info.Initiator == null) return null; // We only want actual damage done by someone else
+
+            if (entity.ToPlayer() == null || info.Initiator.ToPlayer() == null) return null; // If either the player or the victim is not a player, this ain't pvp
+
+            // if its an npc, it'll be a player object but have a non-player userid
+            if ( entity.ToPlayer().userID < 76561197960265729uL || info.Initiator.ToPlayer().userID < 76561197960265729uL )
+                return null;
 
             if(Conf.PrintToChat) {
                 BasePlayer player = info.Initiator.ToPlayer();
                 MessagePlayer(player, Lang("pvpblocked", player.UserIDString));
             }
 
-            return null;
+            return true;
         }
     }
 }
